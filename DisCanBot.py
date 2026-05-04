@@ -41,7 +41,6 @@ async def setup_hook():
 @client.event
 async def on_ready():
     print(f"Бот запущен как {client.user}")
-    update_channel.start()
 
 last_name = None
 
