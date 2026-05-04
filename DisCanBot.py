@@ -45,12 +45,11 @@ last_name = None
 async def update_channel():
     global last_name
 
-    channel = client.get_channel(CHANNEL_ID)
-    if channel is None:
-        print("Канал не найден")
-        return
+    print("Запуск update_channel")
 
     try:
+        channel = await client.fetch_channel(CHANNEL_ID)
+
         numplayers = await get_player_count()
         new_name = f"Игроки: {numplayers}"
 
@@ -63,5 +62,10 @@ async def update_channel():
 
     except Exception as e:
         print(f"Ошибка: {e}")
+
+
+@update_channel.before_loop
+async def before_update():
+    await client.wait_until_ready()
 
 client.run(TOKEN)
