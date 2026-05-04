@@ -4,6 +4,7 @@ import aiohttp
 import os
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
+import sys
 
 TOKEN = os.getenv("TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
@@ -15,6 +16,8 @@ PORT = int(os.environ.get("PORT", 10000))
 intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
+sys.stdout.reconfigure(line_buffering=True)
+
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200)
@@ -25,7 +28,7 @@ def run_web():
     server = HTTPServer(("0.0.0.0", PORT), Handler)
     server.serve_forever()
 
-threading.Thread(target=run_web).start()
+threading.Thread(target=run_web, daemon=True).start()
 
 async def get_player_count():
     async with aiohttp.ClientSession() as session:
@@ -33,14 +36,13 @@ async def get_player_count():
             data = await response.json()
             print("API RESPONSE:", data)
             return data["numplayers"]
-        
-@client.event
-async def setup_hook():
-    update_channel.start()
 
 @client.event
 async def on_ready():
     print(f"Бот запущен как {client.user}")
+
+    if not update_channel.is_running():
+        update_channel.start()
 
 last_name = None
 
