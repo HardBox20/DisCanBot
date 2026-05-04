@@ -2,14 +2,30 @@ import discord
 from discord.ext import tasks
 import aiohttp
 import os
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
 TOKEN = os.getenv("TOKEN")
 CHANNEL_ID = os.getenv("CHANNEL_ID")
 
 API_URL = os.getenv("API_URL")
 
+PORT = int(os.environ.get("PORT", 10000))
+
 intents = discord.Intents.default()
 client = discord.Client(intents=intents)
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+
+def run_web():
+    server = HTTPServer(("0.0.0.0", PORT), Handler)
+    server.serve_forever()
+
+threading.Thread(target=run_web).start()
 
 async def get_player_count():
     async with aiohttp.ClientSession() as session:
