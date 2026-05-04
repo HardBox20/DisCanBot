@@ -47,7 +47,7 @@ async def on_ready():
 
 last_name = None
 
-@tasks.loop(seconds=60)
+@tasks.loop(seconds=120)
 async def update_channel():
     global last_name
 
