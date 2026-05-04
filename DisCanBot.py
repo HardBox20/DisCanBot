@@ -31,15 +31,20 @@ async def get_player_count():
     async with aiohttp.ClientSession() as session:
         async with session.get(API_URL) as response:
             data = await response.json()
-            return data["numplayers"]
+            print("API RESPONSE:", data)
+            return data[0]["numplayers"]
         
 @client.event
 async def on_ready():
     print(f"Бот запущен как {client.user}")
     update_channel.start()
 
+last_name = None
+
 @tasks.loop(seconds=60)
 async def update_channel():
+    global last_name
+
     channel = client.get_channel(CHANNEL_ID)
     if channel is None:
         print("Канал не найден")
@@ -49,8 +54,12 @@ async def update_channel():
         numplayers = await get_player_count()
         new_name = f"Игроки: {numplayers}"
 
-        await channel.edit(name=new_name)
-        print(f"Обновлено: {new_name}")
+        if new_name != last_name:
+            await channel.edit(name=new_name)
+            last_name = new_name
+            print(f"Обновлено: {new_name}")
+        else:
+            print("Без изменений")
 
     except Exception as e:
         print(f"Ошибка: {e}")
