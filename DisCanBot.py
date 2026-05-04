@@ -35,7 +35,7 @@ async def get_player_count():
         async with session.get(API_URL) as response:
             data = await response.json()
             print("API RESPONSE:", data)
-            return data["numplayers"]
+            return f"{data["players"]}/{data['maxplayers']}"
 
 @client.event
 async def on_ready():
@@ -56,7 +56,7 @@ async def update_channel():
         channel = await client.fetch_channel(CHANNEL_ID)
 
         numplayers = await get_player_count()
-        new_name = f"Игроки: {numplayers}"
+        new_name = f"Онлайн: {numplayers}"
 
         if new_name != last_name:
             await channel.edit(name=new_name)
