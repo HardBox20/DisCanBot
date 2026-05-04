@@ -12,7 +12,7 @@ API_URL = os.getenv("API_URL")
 
 PORT = int(os.environ.get("PORT", 10000))
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 client = discord.Client(intents=intents)
 
 class Handler(BaseHTTPRequestHandler):
@@ -34,6 +34,10 @@ async def get_player_count():
             print("API RESPONSE:", data)
             return data["numplayers"]
         
+@client.event
+async def setup_hook():
+    update_channel.start()
+
 @client.event
 async def on_ready():
     print(f"Бот запущен как {client.user}")
