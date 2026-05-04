@@ -6,7 +6,7 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 TOKEN = os.getenv("TOKEN")
-CHANNEL_ID = os.getenv("CHANNEL_ID")
+CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 
 API_URL = os.getenv("API_URL")
 
@@ -34,13 +34,16 @@ async def get_player_count():
             return data["numplayers"]
         
 @client.event
-async def om_ready():
+async def on_ready():
     print(f"Бот запущен как {client.user}")
     update_channel.start()
 
 @tasks.loop(seconds=60)
 async def update_channel():
     channel = client.get_channel(CHANNEL_ID)
+    if channel is None:
+        print("Канал не найден")
+        return
 
     try:
         numplayers = await get_player_count()
