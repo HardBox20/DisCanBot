@@ -35,7 +35,8 @@ async def get_player_count():
         async with session.get(API_URL) as response:
             data = await response.json()
             print("API RESPONSE:", data)
-            return f"{data["players"]}/{data['maxplayers']}"
+
+            return f"{data['response']['numplayers']}/{data['response']['maxplayers']}"
 
 @client.event
 async def on_ready():
