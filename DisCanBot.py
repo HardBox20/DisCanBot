@@ -57,7 +57,7 @@ async def update_channel():
         channel = await client.fetch_channel(CHANNEL_ID)
 
         players, maxplayers = await get_player_count()
-        new_name = f"Онлайн:_{players}│{maxplayers}"
+        new_name = f":green_circle:│Игроки_{players}│{maxplayers}"
 
         if new_name != last_name:
             await channel.edit(name=new_name)
